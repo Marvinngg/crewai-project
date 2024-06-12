@@ -49,7 +49,7 @@ export default function TipEditor() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-3xl font-semibold mb-6 text-gray-800">Edit Agent Tasks</h2>
+      <h2 className="text-3xl font-semibold mb-6 text-gray-800">更新提示词</h2>
       <div className="mb-6">
         <label className="block text-lg font-medium text-gray-700 mb-2">
           Select Tasks:
@@ -105,7 +105,7 @@ export default function TipEditor() {
         onClick={handleUpdateTips} 
         className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
       >
-        Update Tips
+        更新
       </button>
     </div>
   );

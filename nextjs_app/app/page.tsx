@@ -7,7 +7,9 @@ import InputSection from "@/components/InputSection";
 import { useCrewJob } from "@/hooks/useCrewJob";
 import TipEditor from '@/components/TipEditor';
 import JobSelector from '@/components/JobSelector';
-
+import TipEditor3 from "@/components/TipEditor3";
+import TipEditor2 from "@/components/TipEditor2"; 
+import { FinalOutput2 } from "@/components/FinalOutput2";
 export default function Home() {
   const crewJob = useCrewJob();
   const [isClient, setIsClient] = useState(false);
@@ -25,7 +27,7 @@ export default function Home() {
       <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6 px-6">
         <div className="flex flex-col gap-6">
           <div className="bg-white p-6 rounded-lg shadow-lg flex-grow">
-            <h2 className="text-3xl font-semibold mb-4">Companies</h2>
+            <h2 className="text-3xl font-semibold mb-4">公司</h2>
             <InputSection
               title="Companies"
               placeholder="Add a company"
@@ -34,7 +36,7 @@ export default function Home() {
             />
           </div>
           <div className="bg-white p-6 rounded-lg shadow-lg flex-grow">
-            <h2 className="text-3xl font-semibold mb-4">Positions</h2>
+            <h2 className="text-3xl font-semibold mb-4">职位</h2>
             <InputSection
               title="Positions"
               placeholder="Add a position"
@@ -44,11 +46,13 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col justify-between h-full">
-          <TipEditor />
+          {/* <TipEditor /> */}
+          <TipEditor2 /> 
+          <TipEditor3 />
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg col-span-1 md:col-span-2 flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-semibold">Output</h2>
+            <h2 className="text-3xl font-semibold">结果</h2>
             <JobSelector />
             <button
               onClick={() => crewJob.startJob()}
@@ -59,7 +63,8 @@ export default function Home() {
             </button>
           </div>
           <div className="flex-grow">
-            <FinalOutput positionInfoList={crewJob.positionInfoList} />
+            {/* <FinalOutput positionInfoList={crewJob.positionInfoList} /> */}
+            <FinalOutput2 result={crewJob.results} />
           </div>
           <div>
             <EventLog events={crewJob.events} />

@@ -9,10 +9,10 @@ type EventLogProps = {
 export const EventLog: React.FC<EventLogProps> = ({ events }) => {
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-3xl font-semibold mb-4 text-gray-800">Event Details</h2>
+      <h2 className="text-3xl font-semibold mb-4 text-gray-800">事件</h2>
       <div className="flex-grow overflow-auto border border-gray-300 rounded-md p-4 bg-gray-50">
         {events.length === 0 ? (
-          <p className="text-gray-600">No events yet.</p>
+          <p className="text-gray-600">当前暂无事件.</p>
         ) : (
           events.map((event, index) => (
             <div key={index} className="p-4 mb-2 last:mb-0 bg-white rounded-md shadow-sm border border-gray-200">

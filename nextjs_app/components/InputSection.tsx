@@ -47,7 +47,7 @@ export default function InputSection({
           onClick={handleAddClick}
           className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-semibold py-3 px-5 rounded-r-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
         >
-          Add
+          增加
         </button>
       </div>
       <ul className="space-y-2">

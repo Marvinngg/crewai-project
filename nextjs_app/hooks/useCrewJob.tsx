@@ -1,7 +1,5 @@
-"use client";
-
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 
 export type EventType = {
@@ -20,6 +18,10 @@ export type PositionInfo = {
   name: string;
   blog_articles_urls: string[];
   youtube_interviews_urls: NamedUrl[];
+};
+
+export type TravelPlan = {
+  plan: string[];
 };
 
 export const useCrewJob = () => {
@@ -43,6 +45,7 @@ export const useCrewJob = () => {
 
   const [events, setEvents] = useState<EventType[]>([]);
   const [positionInfoList, setPositionInfoList] = useState<PositionInfo[]>([]);
+  const [travelPlan, setTravelPlan] = useState<string[]>([]);
   const [currentJobId, setCurrentJobId] = useState<string>("");
   const [inputData, setInputData] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
@@ -52,6 +55,10 @@ export const useCrewJob = () => {
     return [];
   });
 
+  const [travelFrom, setTravelFrom] = useState<string[]>([]);
+  const [travelTo, setTravelTo] = useState<string[]>([]);
+  const [travelDate, setTravelDate] = useState<string[]>([]);
+  const [travelerInterests, setTravelerInterests] = useState<string[]>([]);
   const [jobIds, setJobIds] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
       const savedJobIds = localStorage.getItem('jobIds');
@@ -59,64 +66,56 @@ export const useCrewJob = () => {
     }
     return [];
   });
+  const [fetchingStatus, setFetchingStatus] = useState<boolean>(false);
+  const [isSelectingJob, setIsSelectingJob] = useState<boolean>(false);
+  const [jobSelected, setJobSelected] = useState<boolean>(false);
+  const [results, setResults] = useState<any>(null);
 
-  // useEffects
+
+  const fetchJobStatus = useCallback(async () => {
+    try {
+      const response = await axios.get<{
+        status: string;
+        result:  any
+        events: EventType[];
+      }>(`http://localhost:3001/api/crew/${currentJobId}`);
+      const { status, events: fetchedEvents, result } = response.data;
+
+      setEvents(fetchedEvents);
+
+      if (result) {
+        setResults(result);
+      }
+
+      if (status === "COMPLETE" || status === "ERROR") {
+        setRunning(false);
+        setFetchingStatus(false);
+        toast.success(`Job ${status.toLowerCase()}.`);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to fetch job status");
+    }
+  }, [currentJobId]);
+
   useEffect(() => {
     let intervalId: number;
-    console.log("currentJobId", currentJobId);
-
-    const fetchJobStatus = async () => {
-      try {
-        console.log("calling fetchJobStatus");
-        const response = await axios.get<{
-          status: string;
-          result: { positions: PositionInfo[] };
-          events: EventType[];
-        // }>(`http://localhost:3001/api/crew/fe3baa34-71ff-4987-87cf-0700df1f09e2`);
-        }>(`http://localhost:3001/api/crew/${currentJobId}`);
-        const { status, events: fetchedEvents, result } = response.data;
-
-        console.log("status update", response.data);
-
-        setEvents(fetchedEvents);
-        localStorage.setItem(`events_${currentJobId}`, JSON.stringify(fetchedEvents));
-
-        if (result) {
-          console.log("setting job result", result);
-          console.log("setting job positions", result.positions);
-          setPositionInfoList(result.positions || []);
-          localStorage.setItem(`positionInfoList_${currentJobId}`, JSON.stringify(result.positions));
-        }
-
-        if (status === "COMPLETE" || status === "ERROR") {
-          if (intervalId) {
-            clearInterval(intervalId);
-          }
-          setRunning(false);
-          toast.success(`Job ${status.toLowerCase()}.`);
-        }
-      } 
-      catch (error) {
-        // if (intervalId) {
-        //   clearInterval(intervalId);
-        // }
-        // setRunning(false);
-        // toast.error("Failed to get job status.");
-        console.error(error);
-      }
-    };
-
-    if (currentJobId !== "") {
-      intervalId = setInterval(fetchJobStatus, 1000) as unknown as number;
+  
+    if (currentJobId && fetchingStatus) {
+      intervalId = setInterval(fetchJobStatus, 5000) as unknown as number;
     }
-
+  
     return () => {
       if (intervalId) {
         clearInterval(intervalId);
       }
     };
-  }, [currentJobId]);
-
+  }, [currentJobId, fetchingStatus, fetchJobStatus]);
+  
+  useEffect(() => {
+    console.log(results);
+  }, [results]);
+  
   useEffect(() => {
     localStorage.setItem('companies', JSON.stringify(companies));
   }, [companies]);
@@ -137,11 +136,15 @@ export const useCrewJob = () => {
     if (currentJobId !== "") {
       const savedEvents = localStorage.getItem(`events_${currentJobId}`);
       const savedPositions = localStorage.getItem(`positionInfoList_${currentJobId}`);
+      const savedTravelPlan = localStorage.getItem(`travelPlan_${currentJobId}`);
       if (savedEvents) {
         setEvents(JSON.parse(savedEvents));
       }
       if (savedPositions) {
         setPositionInfoList(JSON.parse(savedPositions));
+      }
+      if (savedTravelPlan) {
+        setTravelPlan(JSON.parse(savedTravelPlan));
       }
     }
   }, [currentJobId]);
@@ -151,6 +154,8 @@ export const useCrewJob = () => {
     setEvents([]);
     setPositionInfoList([]);
     setRunning(true);
+    setFetchingStatus(true);
+    setJobSelected(false);
 
     try {
       const response = await axios.post<{ job_id: string }>(
@@ -175,6 +180,8 @@ export const useCrewJob = () => {
       toast.error("Failed to start job");
       console.error(error);
       setCurrentJobId("");
+      setFetchingStatus(false);
+      setRunning(false);
     }
   };
 
@@ -183,6 +190,8 @@ export const useCrewJob = () => {
     setEvents([]);
     setPositionInfoList([]);
     setRunning(true);
+    setFetchingStatus(true);
+    setJobSelected(false);
 
     try {
       const inputDataStr = inputData.join(' ');
@@ -207,24 +216,98 @@ export const useCrewJob = () => {
       toast.error("Failed to start job");
       console.error(error);
       setCurrentJobId("");
+      setFetchingStatus(false);
+      setRunning(false);
     }
   };
 
-  const selectJob = (jobId: string) => {
-    setCurrentJobId(jobId);
-    const savedEvents = localStorage.getItem(`events_${jobId}`);
-    const savedPositions = localStorage.getItem(`positionInfoList_${jobId}`);
-    if (savedEvents) {
-      setEvents(JSON.parse(savedEvents));
-    } else {
-      setEvents([]);
-    }
-    if (savedPositions) {
-      setPositionInfoList(JSON.parse(savedPositions));
-    } else {
-      setPositionInfoList([]);
+  const startJob_trip = async () => {
+    // Clear previous job data
+    setEvents([]);
+    setTravelPlan([]);
+    setRunning(true);
+    setFetchingStatus(true);
+    setJobSelected(false);
+
+    try {
+      const response = await axios.post<{ job_id: string }>(
+        "http://localhost:3001/api/crew-trip",
+        {
+          travel_from: travelFrom,
+          travel_to: travelTo,
+          date: travelDate,
+          hobby: travelerInterests,
+        }
+      );
+
+      toast.success("Job started");
+
+      console.log("jobId", response.data.job_id);
+      const newJobId = response.data.job_id;
+      setCurrentJobId(newJobId);
+      setJobIds((prevJobIds) => {
+        const updatedJobIds = [...prevJobIds, newJobId];
+        localStorage.setItem('jobIds', JSON.stringify(updatedJobIds));
+        return updatedJobIds;
+      });
+    } catch (error) {
+      toast.error("Failed to start job");
+      console.error(error);
+      setCurrentJobId("");
+      setFetchingStatus(false);
+      setRunning(false);
     }
   };
+
+  const selectJob1 = async (jobId: string) => {
+    setIsSelectingJob(true);
+    setCurrentJobId(jobId);
+    // const savedEvents = localStorage.getItem(`events_${jobId}`);
+    // const savedPositions = localStorage.getItem(`positionInfoList_${jobId}`);
+    // const savedTravelPlan = localStorage.getItem(`travelPlan_${jobId}`);
+    // if (savedEvents) {
+    //   setEvents(JSON.parse(savedEvents));
+    // } else {
+    //   setEvents([]);
+    // }
+    // if (savedPositions) {
+    //   setPositionInfoList(JSON.parse(savedPositions));
+    // } else {
+    //   setPositionInfoList([]);
+    // }
+    // if (savedTravelPlan) {
+    //   setTravelPlan(JSON.parse(savedTravelPlan));
+    // } else {
+    //   setTravelPlan([]);
+    // }
+    
+    // Fetch the job result from the backend
+    try {
+      const response = await axios.get(`http://localhost:3001/api/job-results/${jobId}`);
+      const { result } = response.data;
+      setResults(result);
+    } catch (error) {
+      console.error('Failed to fetch job result:', error);
+    }
+    setIsSelectingJob(false);
+    setJobSelected(true);
+  };
+
+  const fetchCompletedJobs = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/api/completed-jobs');
+      setJobIds((prevJobIds) => {
+        // 只有在 jobIds 发生变化时才更新
+        if (JSON.stringify(prevJobIds) !== JSON.stringify(response.data)) {
+          return response.data;
+        }
+        return prevJobIds;
+      });
+    } catch (error) {
+      console.error('Failed to fetch completed jobs:', error);
+    }
+  };
+  
 
   return {
     running,
@@ -232,6 +315,8 @@ export const useCrewJob = () => {
     setEvents,
     positionInfoList,
     setPositionInfoList,
+    travelPlan,
+    setTravelPlan,
     currentJobId,
     setCurrentJobId,
     companies,
@@ -240,9 +325,20 @@ export const useCrewJob = () => {
     setPositions,
     startJob,
     startJob_analyse,
+    startJob_trip,
     inputData,
     setInputData,
+    travelFrom,
+    setTravelFrom,
+    travelTo,
+    setTravelTo,
+    travelDate,
+    setTravelDate,
+    travelerInterests,
+    setTravelerInterests,
     jobIds,
-    selectJob,
+    fetchCompletedJobs,
+    selectJob1,
+    results,
   };
 };

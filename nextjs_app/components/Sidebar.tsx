@@ -24,7 +24,10 @@ const Sidebar: React.FC<{ isOpen: boolean, toggleSidebar: () => void }> = ({ isO
               <Link href="/page1" className="block text-white text-lg font-medium hover:text-gray-300 transition duration-200">公司行业分析Agent</Link>
             </li>
             <li>
-              <Link href="/page2" className="block text-white text-lg font-medium hover:text-gray-300 transition duration-200">自定义Agent</Link>
+              <Link href="/page2" className="block text-white text-lg font-medium hover:text-gray-300 transition duration-200">旅行助手Agent</Link>
+            </li>
+            <li>
+              <Link href="/page3" className="block text-white text-lg font-medium hover:text-gray-300 transition duration-200">自定义Agent</Link>
             </li>
           </ul>
         </nav>
