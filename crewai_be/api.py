@@ -294,6 +294,8 @@ def get_job_result(job_id):
         abort(404, description="Job result not found")
     return jsonify({
         "result": job_result.result,
+        "create_at":job_result.created_at,
+        "update_at":job_result.updated_at,
     })
 
 @app.route('/api/jobs', methods=['GET'])
@@ -453,6 +455,23 @@ def get_agent_by_name(name):
         "llm" : agent.llm
         # "tools" :agent.tools
     })
+@app.route('/api/tasks/<int:crew_id>', methods=['GET'])
+def get_tasks_by_crew_id(crew_id):
+    crew_tasks = CrewTask.query.filter_by(crew_id=crew_id).all()
+    if not crew_tasks:
+        abort(404, description="Tasks not found for crew_id: {}".format(crew_id))
+    
+    task_names = [Task.query.get(ct.task_id).name for ct in crew_tasks]
+    return jsonify(task_names)
+
+@app.route('/api/agents/<int:crew_id>', methods=['GET'])
+def get_agents_by_crew_id(crew_id):
+    crew_agents = CrewAgent.query.filter_by(crew_id=crew_id).all()
+    if not crew_agents:
+        abort(404, description="Agents not found for crew_id: {}".format(crew_id))
+    
+    agent_names = [Agent.query.get(ca.agent_id).name for ca in crew_agents]
+    return jsonify(agent_names)
 @app.route('/api/agents/update/<name>', methods=['PUT'])
 def update_agent(name):
     data = request.json

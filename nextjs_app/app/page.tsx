@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { EventLog } from "@/components/EventLog";
-import { FinalOutput } from "@/components/FinalOutput";
 import InputSection from "@/components/InputSection";
 import { useCrewJob } from "@/hooks/useCrewJob";
-import TipEditor from '@/components/TipEditor';
-import JobSelector from '@/components/JobSelector';
+import TipEditor2 from "@/components/TipEditor2";
 import TipEditor3 from "@/components/TipEditor3";
-import TipEditor2 from "@/components/TipEditor2"; 
+import JobSelector from "@/components/JobSelector";
 import { FinalOutput2 } from "@/components/FinalOutput2";
+
 export default function Home() {
   const crewJob = useCrewJob();
   const [isClient, setIsClient] = useState(false);
@@ -17,6 +16,10 @@ export default function Home() {
   useEffect(() => {
     setIsClient(true); // Ensures this code runs only on the client
   }, []);
+
+  useEffect(() => {
+    console.log("Results in Home component:", crewJob.results);
+  }, [crewJob.results]);
 
   if (!isClient) {
     return null; // Prevents rendering until the component is mounted on the client
@@ -46,14 +49,13 @@ export default function Home() {
           </div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col justify-between h-full">
-          {/* <TipEditor /> */}
-          <TipEditor2 /> 
-          <TipEditor3 />
+        <TipEditor2 apiUrl="http://localhost:3001/api/agents/1" />
+          <TipEditor3 apiUrl="http://localhost:3001/api/tasks/1" />
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg col-span-1 md:col-span-2 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-semibold">结果</h2>
-            <JobSelector />
+            {/* <JobSelector /> */}
             <button
               onClick={() => crewJob.startJob()}
               className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
@@ -63,7 +65,6 @@ export default function Home() {
             </button>
           </div>
           <div className="flex-grow">
-            {/* <FinalOutput positionInfoList={crewJob.positionInfoList} /> */}
             <FinalOutput2 result={crewJob.results} />
           </div>
           <div>

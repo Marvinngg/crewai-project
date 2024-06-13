@@ -39,13 +39,13 @@ export default function TravelAssistantPage() {
             data={crewJob.travelerInterests}
             setData={crewJob.setTravelerInterests}
           />
-          <TipEditor2 /> 
-          <TipEditor3 /> 
+          <TipEditor2 apiUrl="http://localhost:3001/api/agents/3" />
+          <TipEditor3 apiUrl="http://localhost:3001/api/tasks/3" />
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-semibold text-gray-800">结果</h2>
-            <SelectJob1 />
+            {/* <SelectJob1 /> */}
             <button
               onClick={() => crewJob.startJob_trip()}
               className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"

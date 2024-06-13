@@ -4,31 +4,38 @@ from tools.browser_tools import BrowserTools
 from tools.search_tools import SearchTools
 from crewai import Agent
 from tools.search_one_website import SearchWebsiteTools
+from database_model import Agent as DBAgent
 class CompanyAnalysisAgents:
 
 
     def company_information_collector(self):
-        return Agent(
-            role='Company Information Collector',
-            goal='Collect comprehensive company information and data for analysis,The data is preferably cutting-edge,latest (2024), authoritative, and significant',
-            backstory='Experienced in gathering and organizing company-related data for analysis',
-            tools=[
-                BrowserTools.scrape_and_summarize_website,
-                SearchTools.search_internet,
-                #SearchWebsiteTools.search_authoritative_websites
-            ],
-            verbose=True
-        )
+      agent_info = DBAgent.query.filter_by(name='company_information_collector').first()
+      role = agent_info.role
+      goal = agent_info.goal
+      backstory = agent_info.backstory
+      return Agent(
+        role=role,
+        goal=goal,
+        backstory=backstory,
+        tools=[
+            SearchTools.search_internet,
+            BrowserTools.scrape_and_summarize_website,
+            # WebsiteSearchTool()
+        ],
+        verbose=True)
 
     def company_analyst(self):
-        return Agent(
-            role='Company Analyst',
-            goal='Based on the data obtained from the search, analyze the company condition and form an analysis report',
-            backstory='Proficient in analyzing company profiles and assessing corporate health',
-            tools=[
-                BrowserTools.scrape_and_summarize_website,
-                SearchTools.search_internet,
-                #SearchWebsiteTools.search_authoritative_websites
-            ],
-            verbose=True
-        )
+      agent_info = DBAgent.query.filter_by(name='company_analyst').first()
+      role = agent_info.role
+      goal = agent_info.goal
+      backstory = agent_info.backstory
+      return Agent(
+        role=role,
+        goal=goal,
+        backstory=backstory,
+        tools=[
+            SearchTools.search_internet,
+            BrowserTools.scrape_and_summarize_website,
+            # WebsiteSearchTool()
+        ],
+        verbose=True)

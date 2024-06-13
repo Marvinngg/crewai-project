@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-
-export default function TipEditor() {
+interface TipEditorProps {
+  apiUrl: string;
+}
+export default function TipEditor({ apiUrl }: TipEditorProps) {
   const [agentNames, setAgentNames] = useState<string[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [role, setRole] = useState('');
@@ -31,7 +33,7 @@ export default function TipEditor() {
 
   const fetchAgentNames = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/agents');
+      const response = await axios.get(apiUrl);
       setAgentNames(response.data);
       if (response.data.length > 0) {
         setSelectedAgent(response.data[0]); // 设置默认选中的代理名称

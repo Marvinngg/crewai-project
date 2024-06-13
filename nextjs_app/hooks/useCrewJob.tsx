@@ -70,8 +70,9 @@ export const useCrewJob = () => {
   const [isSelectingJob, setIsSelectingJob] = useState<boolean>(false);
   const [jobSelected, setJobSelected] = useState<boolean>(false);
   const [results, setResults] = useState<any>(null);
-
-
+  const [startEvent, setStartEvent] = useState<string>('');
+  const [updateEvent, setUpdateEvent] = useState<string>('');
+  const [results1, setResults1] = useState<any>(null);
   const fetchJobStatus = useCallback(async () => {
     try {
       const response = await axios.get<{
@@ -261,37 +262,20 @@ export const useCrewJob = () => {
 
   const selectJob1 = async (jobId: string) => {
     setIsSelectingJob(true);
-    setCurrentJobId(jobId);
-    // const savedEvents = localStorage.getItem(`events_${jobId}`);
-    // const savedPositions = localStorage.getItem(`positionInfoList_${jobId}`);
-    // const savedTravelPlan = localStorage.getItem(`travelPlan_${jobId}`);
-    // if (savedEvents) {
-    //   setEvents(JSON.parse(savedEvents));
-    // } else {
-    //   setEvents([]);
-    // }
-    // if (savedPositions) {
-    //   setPositionInfoList(JSON.parse(savedPositions));
-    // } else {
-    //   setPositionInfoList([]);
-    // }
-    // if (savedTravelPlan) {
-    //   setTravelPlan(JSON.parse(savedTravelPlan));
-    // } else {
-    //   setTravelPlan([]);
-    // }
-    
-    // Fetch the job result from the backend
     try {
       const response = await axios.get(`http://localhost:3001/api/job-results/${jobId}`);
-      const { result } = response.data;
-      setResults(result);
+      const { result, create_at, update_at } = response.data;
+      console.log('Results in selectJob1:', result);
+      setResults1(result);
+      setStartEvent(create_at);
+      setUpdateEvent(update_at);
     } catch (error) {
       console.error('Failed to fetch job result:', error);
     }
     setIsSelectingJob(false);
     setJobSelected(true);
   };
+  
 
   const fetchCompletedJobs = async () => {
     try {
@@ -340,5 +324,8 @@ export const useCrewJob = () => {
     fetchCompletedJobs,
     selectJob1,
     results,
+    startEvent,
+    updateEvent,
+    results1,
   };
 };

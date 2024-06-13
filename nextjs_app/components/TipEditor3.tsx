@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-
-export default function TaskTipEditor() {
+interface TipEditorProps {
+  apiUrl: string;
+}
+export default function TaskTipEditor({ apiUrl }: TipEditorProps) {
   const [taskNames, setTaskNames] = useState<string[]>([]);
   const [selectedTask, setSelectedTask] = useState<string>('');
   const [description, setDescription] = useState('');
@@ -28,7 +30,7 @@ export default function TaskTipEditor() {
 
   const fetchTaskNames = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/tasks');
+      const response = await axios.get(apiUrl);
       setTaskNames(response.data);
       if (response.data.length > 0) {
         setSelectedTask(response.data[0]); // 设置默认选中的任务名称
