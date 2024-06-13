@@ -8,7 +8,7 @@ import TipEditor2 from "@/components/TipEditor2";
 import TipEditor3 from "@/components/TipEditor3";
 import JobSelector from "@/components/JobSelector";
 import { FinalOutput2 } from "@/components/FinalOutput2";
-
+import ModelSelector from '@/components/ModelSelector';
 export default function Home() {
   const crewJob = useCrewJob();
   const [isClient, setIsClient] = useState(false);
@@ -54,8 +54,11 @@ export default function Home() {
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg col-span-1 md:col-span-2 flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-semibold">结果</h2>
+            <h2 className="text-3xl font-semibold">运行</h2>
             {/* <JobSelector /> */}
+            <div className="mb-8">
+                <ModelSelector />
+            </div>
             <button
               onClick={() => crewJob.startJob()}
               className="bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"

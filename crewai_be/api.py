@@ -3,7 +3,8 @@ from datetime import datetime
 import json
 from threading import Thread
 from uuid import uuid4
-
+from dotenv import load_dotenv, set_key
+import os
 # 相关第三方库导入
 from flask import Flask, jsonify, request, abort
 from flask_cors import CORS
@@ -25,7 +26,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # 数据库配置
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3306/crewai'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3307/crewai'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # db = SQLAlchemy()
 db.init_app(app)
@@ -307,6 +308,22 @@ def get_all_jobs():
         "created_at": job.created_at,
         "updated_at": job.updated_at
     } for job in jobs])
+
+load_dotenv()
+
+@app.route('/api/update-model', methods=['POST'])
+def update_model():
+    data = request.get_json()
+    model = data.get('model')
+
+    if model:
+        # 更新 .env 文件中的 MODEL 值
+        set_key('.env', 'MODEL', model)
+        return jsonify({"message": "Model updated successfully"}), 200
+    else:
+        return jsonify({"error": "Invalid model"}), 400
+    
+
 @app.route('/api/update-research-manager', methods=['PUT'])
 def update_research_manager():
     data = request.json

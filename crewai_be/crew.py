@@ -5,13 +5,19 @@ from agents import CompanyResearchAgents
 from job_manager import append_event
 from tasks import CompanyResearchTasks
 from crewai import Crew
+import os
+from dotenv import load_dotenv
+# 加载环境变量
+load_dotenv()
 
+# 获取模型配置
+MODEL = os.getenv('MODEL', 'gpt-4-turbo-preview')
 
 class CompanyResearchCrew:
     def __init__(self, job_id: str):
         self.job_id = job_id
         self.crew = None
-        self.llm = ChatOpenAI(model="gpt-4-turbo-preview")
+        self.llm = ChatOpenAI(model=MODEL)
 
     def setup_crew(self, companies: list[str], positions: list[str]):
         agents = CompanyResearchAgents()

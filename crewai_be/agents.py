@@ -4,13 +4,20 @@ from langchain_openai import ChatOpenAI
 from crewai_tools import SerperDevTool
 from tools.youtube_search_tools import YoutubeVideoSearchTool
 from database_model import Agent as DBAgent
+from dotenv import load_dotenv
+import os
 
+# 加载环境变量
+load_dotenv()
+
+# 获取模型配置
+MODEL = os.getenv('MODEL', 'gpt-4-turbo-preview')
 class CompanyResearchAgents():
 
   def __init__(self):
     self.searchInternetTool = SerperDevTool()
     self.youtubeSearchTool = YoutubeVideoSearchTool()
-    self.llm = ChatOpenAI(model="gpt-4-turbo-preview")
+    self.llm = ChatOpenAI(model=MODEL)
 
   def research_manager(self, companies: List[str], positions: List[str]) -> Agent:
     agent_info = DBAgent.query.filter_by(name='research_manager').first()

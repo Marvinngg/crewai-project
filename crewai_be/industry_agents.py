@@ -6,11 +6,18 @@ from tools.search_tools import SearchTools
 from crewai_tools import WebsiteSearchTool
 from dotenv import load_dotenv
 from database_model import Agent as DBAgent
+from langchain_openai import ChatOpenAI
+import os
+# 加载环境变量
 load_dotenv()
+
+# 获取模型配置
+MODEL = os.getenv('MODEL', 'gpt-4-turbo-preview')
 # tool1 = WebsiteSearchTool(website='https://example.com')
 # tool2 = WebsiteSearchTool(website='https://example.com')   # 预留权威网站地址，实现在网站内容中进行语义搜索
 class IndustryAnalysisAgents:
-
+    def __init__(self):
+      self.llm = ChatOpenAI(model=MODEL)
     def industy_information_collector(self):
       agent_info = DBAgent.query.filter_by(name='industy_information_collector').first()
       role = agent_info.role
@@ -19,6 +26,7 @@ class IndustryAnalysisAgents:
       return Agent(
         role=role,
         goal=goal,
+        llm=self.llm,
         backstory=backstory,
         tools=[
                 BrowserTools.scrape_and_summarize_website,
@@ -34,6 +42,7 @@ class IndustryAnalysisAgents:
       return Agent(
         role=role,
         goal=goal,
+        llm=self.llm,
         backstory=backstory,
         tools=[
                 BrowserTools.scrape_and_summarize_website,

@@ -11,13 +11,15 @@ from job_manager import append_event
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 load_dotenv()
+import os
+MODEL = os.getenv('MODEL', 'gpt-4-turbo-preview')
 class CompanyCrew:
     """Handles the orchestration of company analysis tasks"""
 
     def __init__(self, job_id: str):
         self.job_id = job_id
         self.crew = None
-        self.llm = ChatOpenAI(model="gpt-4-turbo-preview")
+        self.llm = ChatOpenAI(MODEL)
 
     def setup_crew(self, company_name: str):
         agents = CompanyAnalysisAgents()
@@ -61,7 +63,7 @@ class IndustryCrew:
     def __init__(self, job_id: str):
         self.job_id = job_id
         self.crew = None
-        self.llm = ChatOpenAI(model="gpt-4-turbo-preview")
+        self.llm = ChatOpenAI(model=MODEL)
 
     def setup_crew(self, industry_name: str):
         agents = IndustryAnalysisAgents()
@@ -105,7 +107,7 @@ class MacroeconomicCrew:
     def __init__(self, job_id: str):
         self.job_id = job_id
         self.crew = None
-        self.llm = ChatOpenAI(model="gpt-4-turbo-preview")
+        self.llm = ChatOpenAI(model=MODEL)
 
     def setup_crew(self, country: str):
         agents = MacroeconomicAnalysisAgents()
@@ -147,7 +149,7 @@ class TripPlannerCrew:
     def __init__(self, job_id: str):
         self.job_id = job_id
         self.crew = None
-        self.llm = ChatOpenAI(model="gpt-4-turbo-preview")
+        self.llm = ChatOpenAI(model=MODEL)
 
     def setup_crew(self, location:str,travelto:str,date:str,hobby:str):
         agents = TripAgents()
