@@ -24,12 +24,19 @@ load_dotenv()
 # 初始化Flask应用
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
+db_user = os.getenv('MYSQL_USER', 'root')
+db_password = os.getenv('MYSQL_PASSWORD', '123456')
+db_name = os.getenv('MYSQL_DATABASE', 'crewai')
+db_host = os.getenv('MYSQL_HOST', 'db')  # 使用服务名称'db'
 
-# 数据库配置
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3307/crewai'
+# 设置SQLAlchemy连接字符串
+app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# db = SQLAlchemy()
 db.init_app(app)
+# 数据库配置
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost:3307/crewai'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db.init_app(app)
 
 
 
@@ -532,4 +539,4 @@ def get_completed_jobs():
 
 if __name__ == '__main__':
     
-    app.run(debug=True, port=3001)
+    app.run(host="0.0.0.0",debug=True, port=3001)

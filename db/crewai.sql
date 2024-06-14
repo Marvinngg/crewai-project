@@ -1,4 +1,5 @@
 create database crewai;
+use crewai;
 CREATE TABLE jobs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     job_id VARCHAR(36) UNIQUE NOT NULL,
